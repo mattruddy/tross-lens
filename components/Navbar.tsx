@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Heading,
   HStack,
   Menu,
@@ -26,7 +27,7 @@ export const Navbar = () => {
       shadow="md"
     >
       <Heading as={NextLink} href="/" passHref={true} size={"md"}>
-        Tross Graph
+        Tross Graph <Badge>Beta</Badge>
       </Heading>
       <Menu autoSelect={false}>
         <MenuButton>
