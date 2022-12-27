@@ -1,6 +1,7 @@
 import { Flex, Stack, VStack } from "@chakra-ui/react";
 import Head from "next/head";
 import { ReactNode } from "react";
+import { Footer } from "./Footer";
 import { Navbar } from "./Navbar";
 
 interface Props {

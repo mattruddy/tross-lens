@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client";
 import {
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -10,11 +9,10 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import { getRecommendedProfiles } from "../gql/queries";
+import NextLink from "next/link";
 
 export default function Home() {
-  const router = useRouter();
   const { data, loading } = useQuery(getRecommendedProfiles);
 
   return (
@@ -25,7 +23,14 @@ export default function Home() {
           .map((profile: any, i: number) => {
             return (
               <WrapItem key={i}>
-                <Card align={"center"} variant={"outline"} w="300px" h="300px">
+                <Card
+                  as={NextLink}
+                  href={`/profile/${profile.id}`}
+                  align={"center"}
+                  variant={"outline"}
+                  w="300px"
+                  h="300px"
+                >
                   <CardBody>
                     {profile.picture && (
                       <Image
@@ -38,13 +43,6 @@ export default function Home() {
                   <CardFooter>
                     <HStack>
                       <Heading size={"md"}>{profile.name}</Heading>
-                      <Button
-                        onClick={() => {
-                          router.push(`/profile/${profile.id}`);
-                        }}
-                      >
-                        View
-                      </Button>
                     </HStack>
                   </CardFooter>
                 </Card>
