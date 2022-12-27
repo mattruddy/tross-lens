@@ -25,9 +25,13 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <ApolloProvider client={apolloClient}>
+        {/* <WagmiConfig client={client}>
+          <LensProvider config={lensConfig}> */}
         <Layout>
           <Component {...pageProps} />
         </Layout>
+        {/* </LensProvider>
+        </WagmiConfig> */}
       </ApolloProvider>
     </ChakraProvider>
   );

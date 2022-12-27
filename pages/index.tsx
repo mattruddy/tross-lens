@@ -21,8 +21,8 @@ export default function Home() {
     <Wrap spacing={"30px"} justify={"center"}>
       {!loading &&
         data?.recommendedProfiles
-          .filter((profile) => profile.name)
-          .map((profile, i) => {
+          .filter((profile: any) => profile.name)
+          .map((profile: any, i: number) => {
             return (
               <WrapItem key={i}>
                 <Card align={"center"} variant={"outline"} w="300px" h="300px">
