@@ -2,6 +2,9 @@ import type { AppProps } from "next/app";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Layout } from "../components/Layout";
+// import { LensProvider } from "@lens-protocol/react";
+// import { client, lensConfig } from "../configs";
+// import { WagmiConfig } from "wagmi";
 
 const APIURL = "https://api-mumbai.lens.dev/";
 
