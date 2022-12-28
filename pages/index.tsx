@@ -1,75 +1,47 @@
-/* eslint-disable jsx-a11y/alt-text */
+import { Box, Heading, VStack } from "@chakra-ui/react";
+import { useMemo } from "react";
+import useInfiniteScroll from "react-infinite-scroll-hook";
+import { PostCard } from "../components/PostCard";
 import {
-  Card,
-  CardBody,
-  CardFooter,
-  Heading,
-  HStack,
-  Image,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
-import NextLink from "next/link";
-import { useAccount } from "wagmi";
-import { CreateProfileForm } from "../components/CreateProfileForm";
-import {
-  useDefaultProfileQuery,
-  useRecommendedProfilesQuery,
+  CustomFiltersTypes,
+  Post,
+  PublicationSortCriteria,
+  useExplorePublicationsQuery,
 } from "../graphql/generated/generated";
-import { useWalletAuth } from "../hooks/useWalletAuth";
 
 export default function Home() {
-  const { address } = useAccount();
-  const { data: profileData } = useDefaultProfileQuery({
+  const { data, fetchMore, loading } = useExplorePublicationsQuery({
     variables: {
       request: {
-        ethereumAddress: address,
+        customFilters: [CustomFiltersTypes.Gardeners],
+        sortCriteria: PublicationSortCriteria.Latest,
+        limit: 5,
       },
     },
-    skip: !address,
   });
-  const { data, loading } = useRecommendedProfilesQuery();
+  const posts = useMemo(
+    () =>
+      data?.explorePublications.items.filter(
+        (item) => item.__typename === "Post"
+      ) as Post[],
+    [data]
+  );
+  const [ref] = useInfiniteScroll({
+    loading,
+    onLoadMore: () => fetchMore({ variables: {} }),
+    hasNextPage: true,
+    rootMargin: "0px 0px 400px 0px",
+  });
+  console.log({ posts });
 
   return (
-    <>
-      <CreateProfileForm />
-      <Wrap spacing={"30px"} justify={"center"}>
-        {!loading &&
-          data?.recommendedProfiles
-            .filter((profile) => profile.name)
-            .map((profile, i) => {
-              return (
-                <WrapItem key={i}>
-                  <Card
-                    as={NextLink}
-                    href={`/profile/${profile.id}`}
-                    align={"center"}
-                    variant={"outline"}
-                    w="300px"
-                    h="300px"
-                  >
-                    <CardBody>
-                      {profile.picture && (
-                        <Image
-                          boxSize={"180px"}
-                          borderRadius="lg"
-                          src={
-                            profile.picture.__typename === "MediaSet" &&
-                            profile.picture.original.url
-                          }
-                        />
-                      )}
-                    </CardBody>
-                    <CardFooter>
-                      <HStack>
-                        <Heading size={"md"}>{profile.name}</Heading>
-                      </HStack>
-                    </CardFooter>
-                  </Card>
-                </WrapItem>
-              );
-            })}
-      </Wrap>
-    </>
+    <VStack px="20px" w="100%">
+      <Box w="100%" alignItems={"start"}>
+        <Heading>Discover</Heading>
+      </Box>
+      {posts?.map((post, i) => (
+        <PostCard key={i} post={post} />
+      ))}
+    </VStack>
   );
 }

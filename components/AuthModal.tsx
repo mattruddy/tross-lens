@@ -76,9 +76,6 @@ const Login = ({ onLogin }: LoginProps) => {
 export const AuthModal = ({ isOpen, toggle }: Props) => {
   const { isConnected, isLoggedIn } = useWalletAuth();
 
-  console.log({auth: isLoggedIn});
-  
-
   return (
     <Modal isOpen={isOpen} onClose={toggle} autoFocus={false}>
       <ModalOverlay />

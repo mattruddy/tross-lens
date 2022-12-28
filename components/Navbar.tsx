@@ -21,8 +21,6 @@ export const Navbar = () => {
   const { isOpen, onToggle } = useDisclosure();
   const { logout, isLoggedIn } = useWalletAuth();
 
-  console.log({ nav: isLoggedIn });
-
   return (
     <>
       <HStack
@@ -48,6 +46,9 @@ export const Navbar = () => {
               <Avatar size={"sm"} />
             </MenuButton>
             <MenuList>
+              <MenuItem as={NextLink} href="/profile" passHref>
+                Profile
+              </MenuItem>
               <MenuItem onClick={() => logout()}>Logout</MenuItem>
             </MenuList>
           </Menu>
