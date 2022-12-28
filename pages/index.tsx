@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+/* eslint-disable jsx-a11y/alt-text */
 import {
   Card,
   CardBody,
@@ -9,46 +9,67 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import { getRecommendedProfiles } from "../gql/queries";
 import NextLink from "next/link";
+import { useAccount } from "wagmi";
+import { CreateProfileForm } from "../components/CreateProfileForm";
+import {
+  useDefaultProfileQuery,
+  useRecommendedProfilesQuery,
+} from "../graphql/generated/generated";
+import { useWalletAuth } from "../hooks/useWalletAuth";
 
 export default function Home() {
-  const { data, loading } = useQuery(getRecommendedProfiles);
+  const { address } = useAccount();
+  const { data: profileData } = useDefaultProfileQuery({
+    variables: {
+      request: {
+        ethereumAddress: address,
+      },
+    },
+    skip: !address,
+  });
+  const { data, loading } = useRecommendedProfilesQuery();
 
   return (
-    <Wrap spacing={"30px"} justify={"center"}>
-      {!loading &&
-        data?.recommendedProfiles
-          .filter((profile: any) => profile.name)
-          .map((profile: any, i: number) => {
-            return (
-              <WrapItem key={i}>
-                <Card
-                  as={NextLink}
-                  href={`/profile/${profile.id}`}
-                  align={"center"}
-                  variant={"outline"}
-                  w="300px"
-                  h="300px"
-                >
-                  <CardBody>
-                    {profile.picture && (
-                      <Image
-                        boxSize={"180px"}
-                        borderRadius="lg"
-                        src={profile.picture.original.url}
-                      />
-                    )}
-                  </CardBody>
-                  <CardFooter>
-                    <HStack>
-                      <Heading size={"md"}>{profile.name}</Heading>
-                    </HStack>
-                  </CardFooter>
-                </Card>
-              </WrapItem>
-            );
-          })}
-    </Wrap>
+    <>
+      <CreateProfileForm />
+      <Wrap spacing={"30px"} justify={"center"}>
+        {!loading &&
+          data?.recommendedProfiles
+            .filter((profile) => profile.name)
+            .map((profile, i) => {
+              return (
+                <WrapItem key={i}>
+                  <Card
+                    as={NextLink}
+                    href={`/profile/${profile.id}`}
+                    align={"center"}
+                    variant={"outline"}
+                    w="300px"
+                    h="300px"
+                  >
+                    <CardBody>
+                      {profile.picture && (
+                        <Image
+                          boxSize={"180px"}
+                          borderRadius="lg"
+                          src={
+                            profile.picture.__typename === "MediaSet" &&
+                            profile.picture.original.url
+                          }
+                        />
+                      )}
+                    </CardBody>
+                    <CardFooter>
+                      <HStack>
+                        <Heading size={"md"}>{profile.name}</Heading>
+                      </HStack>
+                    </CardFooter>
+                  </Card>
+                </WrapItem>
+              );
+            })}
+      </Wrap>
+    </>
   );
 }

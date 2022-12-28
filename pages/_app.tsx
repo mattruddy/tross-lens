@@ -1,15 +1,35 @@
 import type { AppProps } from "next/app";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  concat,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Layout } from "../components/Layout";
-// import { LensProvider } from "@lens-protocol/react";
-// import { client, lensConfig } from "../configs";
-// import { WagmiConfig } from "wagmi";
+import { client } from "../configs";
+import { WagmiConfig } from "wagmi";
+import { AuthData } from "../types";
 
-const APIURL = "https://api-mumbai.lens.dev/";
+const httpLink = new HttpLink({ uri: process.env.NEXT_PUBLIC_APIURL });
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  const authData = localStorage.getItem("auth-data");
+  if (authData) {
+    const auth = JSON.parse(authData) as AuthData;
+    operation.setContext({
+      headers: {
+        "x-access-token": auth.accessToken,
+      },
+    });
+  }
+  return forward(operation);
+});
 
 export const apolloClient = new ApolloClient({
-  uri: APIURL,
+  link: concat(authMiddleware, httpLink),
   cache: new InMemoryCache(),
 });
 
@@ -28,13 +48,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <ApolloProvider client={apolloClient}>
-        {/* <WagmiConfig client={client}>
-          <LensProvider config={lensConfig}> */}
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-        {/* </LensProvider>
-        </WagmiConfig> */}
+        <WagmiConfig client={client}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </WagmiConfig>
       </ApolloProvider>
     </ChakraProvider>
   );

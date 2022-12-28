@@ -1,4 +1,3 @@
-import { useLazyQuery } from "@apollo/client";
 import {
   Box,
   Button,
@@ -15,16 +14,18 @@ import {
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { FollowModal } from "../../components/FollowModal";
-import { getFollowers, getFollowing, getProfile } from "../../gql/queries";
+import {
+  useFollowersLazyQuery,
+  useFollowingLazyQuery,
+  useProfileLazyQuery,
+} from "../../graphql/generated/generated";
 
-export default function ProfilePage() {
+export default function Profile() {
   const { isOpen, onToggle } = useDisclosure();
   const router = useRouter();
-  const [getUserProfile, { data, loading }] = useLazyQuery(getProfile);
-  const [getUserFollowing, { data: followingData }] =
-    useLazyQuery(getFollowing);
-  const [getUserFollowers, { data: followersData }] =
-    useLazyQuery(getFollowers);
+  const [getUserProfile, { data, loading }] = useProfileLazyQuery();
+  const [getUserFollowing, { data: followingData }] = useFollowingLazyQuery();
+  const [getUserFollowers, { data: followersData }] = useFollowersLazyQuery();
 
   const { id } = router.query;
 
@@ -35,14 +36,17 @@ export default function ProfilePage() {
   }, [id]);
 
   return (
-    data && (
+    data?.profile && (
       <>
         <VStack w="100%" flexDir={{ base: "column", md: "row" }} px="20px">
           <Box>
             <Image
               alt="profile-pic"
               borderRadius={"lg"}
-              src={data.profile.coverPicture?.original.url}
+              src={
+                data.profile.coverPicture?.__typename === "MediaSet" &&
+                data.profile.coverPicture?.original.url
+              }
             />
           </Box>
           <VStack align="start" w={"100%"} p="20px">
@@ -56,7 +60,7 @@ export default function ProfilePage() {
                   onClick={() => {
                     getUserFollowers({
                       variables: {
-                        request: { profileId: data.profile.id, limit: 10 },
+                        request: { profileId: data.profile?.id, limit: 10 },
                       },
                     });
                     onToggle();
@@ -72,7 +76,7 @@ export default function ProfilePage() {
                   onClick={() => {
                     getUserFollowing({
                       variables: {
-                        request: { address: data.profile.ownedBy, limit: 10 },
+                        request: { address: data.profile?.ownedBy, limit: 10 },
                       },
                     });
                     onToggle();

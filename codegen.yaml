@@ -1,0 +1,13 @@
+overwrite: true
+schema: "https://api-mumbai.lens.dev"
+documents: "./graphql/*.graphql"
+generates:
+  ./graphql/generated/generated.tsx:
+    plugins:
+      - "typescript-operations"
+      - "named-operations-object"
+      - "typescript-react-apollo"
+      - "typescript"
+    config:
+      fetcher: fetch
+      dedupeFragments: true
