@@ -1,16 +1,16 @@
-import { useLocalStorageState } from "ahooks";
+import { useEffect } from "react";
+import { useRecoilState } from "recoil";
 import { useAccount, useSignMessage } from "wagmi";
 import {
   useAuthenticateMutation,
   useChallengeLazyQuery,
 } from "../graphql/generated/generated";
+import { authState } from "../state/authState";
 import { AuthData } from "../types";
 
 export const useWalletAuth = () => {
   const { address, isConnected } = useAccount();
-  const [auth, setAuth] = useLocalStorageState<AuthData | undefined>(
-    "auth-data"
-  );
+  const [auth, setAuth] = useRecoilState(authState);
   const { signMessage } = useSignMessage({
     onSuccess(data) {
       authenticate({
@@ -51,13 +51,15 @@ export const useWalletAuth = () => {
     setAuth(undefined);
   };
 
-  const isLoggedIn = !!auth;
+  useEffect(() => {
+    console.log({ data: auth });
+  }, [auth]);
 
   return {
     login,
     logout,
     accessToken: auth?.accessToken,
     isConnected,
-    isLoggedIn,
+    isLoggedIn: !!auth,
   } as const;
 };

@@ -12,28 +12,23 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { FollowModal } from "../../components/FollowModal";
 import {
   useFollowersLazyQuery,
   useFollowingLazyQuery,
-  useProfileLazyQuery,
+
+  useProfileQuery,
 } from "../../graphql/generated/generated";
 
 export default function Profile() {
   const { isOpen, onToggle } = useDisclosure();
   const router = useRouter();
-  const [getUserProfile, { data, loading }] = useProfileLazyQuery();
+  const { id } = router.query;
+  const { data, loading } = useProfileQuery({
+    skip: !id,
+  });
   const [getUserFollowing, { data: followingData }] = useFollowingLazyQuery();
   const [getUserFollowers, { data: followersData }] = useFollowersLazyQuery();
-
-  const { id } = router.query;
-
-  useEffect(() => {
-    if (id) {
-      getUserProfile({ variables: { request: { profileId: id } } });
-    }
-  }, [id]);
 
   return (
     data?.profile && (

@@ -12,6 +12,7 @@ import { Layout } from "../components/Layout";
 import { client } from "../configs";
 import { WagmiConfig } from "wagmi";
 import { AuthData } from "../types";
+import { RecoilRoot } from "recoil";
 
 const httpLink = new HttpLink({ uri: process.env.NEXT_PUBLIC_APIURL });
 
@@ -49,9 +50,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <ChakraProvider theme={theme}>
       <ApolloProvider client={apolloClient}>
         <WagmiConfig client={client}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <RecoilRoot>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </RecoilRoot>
         </WagmiConfig>
       </ApolloProvider>
     </ChakraProvider>
