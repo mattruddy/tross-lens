@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { useAccount, useSignMessage } from "wagmi";
 import {
@@ -6,7 +5,6 @@ import {
   useChallengeLazyQuery,
 } from "../graphql/generated/generated";
 import { authState } from "../state/authState";
-import { AuthData } from "../types";
 
 export const useWalletAuth = () => {
   const { address, isConnected } = useAccount();
@@ -50,10 +48,6 @@ export const useWalletAuth = () => {
   const logout = () => {
     setAuth(undefined);
   };
-
-  useEffect(() => {
-    console.log({ data: auth });
-  }, [auth]);
 
   return {
     login,

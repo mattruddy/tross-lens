@@ -16,7 +16,7 @@ const localStorageEffect =
 
     onSet((newValue: any) => {
       if (typeof window === "undefined") return;
-      if (newValue instanceof DefaultValue) {
+      if (newValue === undefined) {
         localStorage.removeItem(key);
       } else {
         localStorage.setItem(key, JSON.stringify(newValue));
